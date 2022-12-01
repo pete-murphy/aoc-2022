@@ -49,11 +49,12 @@ fn part2(input: &str) -> i64 {
 
 pub fn run() {
     let cwd = env::current_dir().unwrap();
-    let input = fs::read_to_string(cwd.join("src").join("day01-input"));
-    let input_ = input.expect("Failed to read input");
+    let input =
+        fs::read_to_string(cwd.join("src").join("day01-input")).expect("Failed to read input");
+    let input_str = input.as_str();
 
     println!("part 1");
-    println!("{}", part1(input_.as_str()));
+    println!("{}", part1(input_str));
     println!("part 2");
-    println!("{}", part2(input_.as_str()));
+    println!("{}", part2(input_str));
 }

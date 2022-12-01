@@ -5,5 +5,5 @@ mod day01;
 
 fn main() {
     day01::run();
-    io::stdout().flush();
+    io::stdout().flush().expect("Failed to flush stdout");
 }
