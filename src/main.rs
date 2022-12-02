@@ -2,8 +2,9 @@
 
 use std::io::{self, Write};
 mod day01;
+mod day02;
 
 fn main() {
     day01::run();
-    io::stdout().flush().expect("Failed to flush stdout");
+    day02::run();
 }
