@@ -24,7 +24,17 @@ fn parse(input: &str) -> impl Iterator<Item = Rucksacks> + '_ {
 }
 
 fn char_to_priority(char: char) -> u32 {
-    return char as u32 - 48;
+    let lower_chars = ('a'..='z').into_iter().collect::<Vec<char>>();
+    let upper_chars = ('A'..='Z').into_iter().collect::<Vec<char>>();
+    let all_chars = [lower_chars, upper_chars].concat();
+
+    return all_chars
+        .iter()
+        .position(|&c| c == char)
+        .unwrap_or(0)
+        .try_into()
+        .unwrap_or(0)
+        + 1;
 }
 
 fn overlap(rucksacks: Rucksacks) -> u32 {
@@ -43,17 +53,10 @@ fn part1(input: &str) -> u32 {
 }
 
 pub fn run() {
-    // let cwd = env::current_dir().unwrap();
-    // let input =
-    //     fs::read_to_string(cwd.join("src").join("day02-input")).expect("Failed to read input");
-    // let input_str = input.as_str();
-    let input_str = SAMPLE;
-
-    // println!("{:#?}", parse(input_str).collect::<Vec<_>>());
-
-    println!("{} {:#?}", "a", char_to_priority('a'));
-    println!("{} {:#?}", "z", char_to_priority('z'));
-    println!("{} {:#?}", "A", char_to_priority('A'));
+    let cwd = env::current_dir().unwrap();
+    let input =
+        fs::read_to_string(cwd.join("src").join("day03-input")).expect("Failed to read input");
+    let input_str = input.as_str();
 
     println!("part 1");
     println!("{}", part1(input_str));
