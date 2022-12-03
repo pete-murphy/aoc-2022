@@ -1,6 +1,6 @@
 use itertools::{self, Itertools};
 use std::{
-    collections::{hash_set::Union, HashMap, HashSet},
+    collections::{HashMap, HashSet},
     env, fs,
 };
 
@@ -14,13 +14,13 @@ CrZsJsPPZsGzwwsLwLmpwMDw
 
 type Rucksacks = (HashMap<char, usize>, HashMap<char, usize>);
 
-fn parse_line(line: &str) -> Rucksacks {
+fn parse_line_part1(line: &str) -> Rucksacks {
     let split = line.split_at(line.len() / 2);
     return (split.0.chars().counts(), split.1.chars().counts());
 }
 
-fn parse(input: &str) -> impl Iterator<Item = Rucksacks> + '_ {
-    return input.lines().map(parse_line);
+fn parse_part1(input: &str) -> impl Iterator<Item = Rucksacks> + '_ {
+    return input.lines().map(parse_line_part1);
 }
 
 fn char_to_priority(char: char) -> u32 {
@@ -37,7 +37,7 @@ fn char_to_priority(char: char) -> u32 {
         + 1;
 }
 
-fn overlap(rucksacks: Rucksacks) -> u32 {
+fn overlap_rucksacks(rucksacks: Rucksacks) -> u32 {
     let k0: HashSet<char> = rucksacks.0.keys().cloned().collect();
     let k1: HashSet<char> = rucksacks.1.keys().cloned().collect();
 
@@ -47,9 +47,34 @@ fn overlap(rucksacks: Rucksacks) -> u32 {
 }
 
 fn part1(input: &str) -> u32 {
-    let parsed = parse(input);
+    let parsed = parse_part1(input);
 
-    return parsed.map(overlap).sum();
+    return parsed.map(overlap_rucksacks).sum();
+}
+
+fn part2(input: &str) -> u32 {
+    return input
+        .lines()
+        .chunks(3)
+        .into_iter()
+        .map(|chunk| {
+            let v = chunk.collect::<Vec<_>>();
+            let ch = v.get(0).expect("Empty wibble").clone();
+            let mut intersection: HashSet<char> = ch.clone().chars().collect();
+
+            for chars in v {
+                let chars_set: HashSet<char> = chars.chars().collect();
+                intersection = intersection.intersection(&chars_set).cloned().collect();
+            }
+
+            return intersection
+                .iter()
+                .next()
+                .expect("Empty intersection")
+                .clone();
+        })
+        .map(char_to_priority)
+        .sum();
 }
 
 pub fn run() {
@@ -60,6 +85,6 @@ pub fn run() {
 
     println!("part 1");
     println!("{}", part1(input_str));
-    // println!("part 2");
-    // println!("{}", part2(input_str));
+    println!("part 2");
+    println!("{}", part2(input_str));
 }
