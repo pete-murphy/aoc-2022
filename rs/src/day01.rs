@@ -49,8 +49,7 @@ fn part2(input: &str) -> i64 {
 
 pub fn run() {
     let cwd = env::current_dir().unwrap();
-    let input =
-        fs::read_to_string(cwd.join("src").join("day01-input")).expect("Failed to read input");
+    let input = fs::read_to_string(cwd.join("../input/day01")).expect("Failed to read input");
     let input_str = input.as_str();
 
     println!("part 1");
