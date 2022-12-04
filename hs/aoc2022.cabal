@@ -1,0 +1,27 @@
+cabal-version:      3.0
+name:               aoc2022
+version:            0
+homepage:           https://github.com/ptrfrncsmrph/aoc-2022
+license:            NONE
+author:             Peter Murphy
+maintainer:         26548438+ptrfrncsmrph@users.noreply.github.com
+
+library
+    exposed-modules:
+        Day01
+    build-depends:
+        base ^>=4.16.2.0,
+        containers,
+        text
+    default-extensions:
+        BlockArguments
+        OverloadedStrings
+    hs-source-dirs:   src
+    default-language: Haskell2010
+
+executable aoc2022
+    main-is:          Main.hs
+    build-depends:
+        base ^>=4.16.2.0,
+        aoc2022
+    default-language: Haskell2010
