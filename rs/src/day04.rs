@@ -1,8 +1,17 @@
 use std::{env, fs};
 
+trait IsBetween<A> {
+    fn is_between(&self, pair: (A, A)) -> bool;
+}
 type Section = (u32, u32);
 
-fn parse_line_part1(line: &str) -> (Section, Section) {
+impl<A: Eq + Ord> IsBetween<A> for A {
+    fn is_between(&self, pair: (A, A)) -> bool {
+        self >= &pair.0 && self <= &pair.1
+    }
+}
+
+fn parse_line(line: &str) -> (Section, Section) {
     let mut split = line.split(",");
     let x = split
         .next()
@@ -29,16 +38,31 @@ fn parse_line_part1(line: &str) -> (Section, Section) {
     (x, y)
 }
 
-fn sections_overlap(sections: (Section, Section)) -> bool {
+fn sections_overlap_entirely(sections: (Section, Section)) -> bool {
     (sections.0 .0 >= sections.1 .0 && sections.0 .1 <= sections.1 .1)
         || (sections.1 .0 >= sections.0 .0 && sections.1 .1 <= sections.0 .1)
 }
 
+fn sections_overlap((x, y): (Section, Section)) -> bool {
+    x.0.is_between(y) || x.1.is_between(y) || sections_overlap_entirely((x, y))
+}
+
 fn part1(input: &str) -> u32 {
-    let parsed = input
-        .split("\n")
-        .filter(|&l| !l.is_empty())
-        .map(parse_line_part1);
+    let parsed = input.split("\n").filter(|&l| !l.is_empty()).map(parse_line);
+
+    let mut n = 0;
+
+    for sections in parsed {
+        if sections_overlap_entirely(sections) {
+            n += 1;
+        }
+    }
+
+    n
+}
+
+fn part2(input: &str) -> u32 {
+    let parsed = input.split("\n").filter(|&l| !l.is_empty()).map(parse_line);
 
     let mut n = 0;
 
@@ -58,6 +82,6 @@ pub fn run() {
 
     println!("part 1");
     println!("{}", part1(input_str));
-    // println!("part 2");
-    // println!("{}", part2(input_str));
+    println!("part 2");
+    println!("{}", part2(input_str));
 }
