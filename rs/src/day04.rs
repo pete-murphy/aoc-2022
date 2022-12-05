@@ -3,11 +3,10 @@ use std::{env, fs};
 type Section = (u32, u32);
 
 fn parse_line_part1(line: &str) -> (Section, Section) {
-    let mut split = line.split(",").filter(|&l| !l.is_empty());
+    let mut split = line.split(",");
     let x = split
         .next()
         .map(|x| {
-            println!("{}", x);
             let mut sp = x
                 .split("-")
                 .map(|n| n.parse::<u32>().expect("Failed to parse int"));
@@ -36,7 +35,10 @@ fn sections_overlap(sections: (Section, Section)) -> bool {
 }
 
 fn part1(input: &str) -> u32 {
-    let parsed = input.split("\n").map(parse_line_part1);
+    let parsed = input
+        .split("\n")
+        .filter(|&l| !l.is_empty())
+        .map(parse_line_part1);
 
     let mut n = 0;
 
