@@ -26,6 +26,7 @@ library
         ViewPatterns
     hs-source-dirs:   src
     default-language: Haskell2010
+    ghc-options: -Wall
 
 executable aoc2022
     main-is:          Main.hs
@@ -33,3 +34,4 @@ executable aoc2022
         base ^>=4.16.2.0,
         aoc2022
     default-language: Haskell2010
+    ghc-options: -O2

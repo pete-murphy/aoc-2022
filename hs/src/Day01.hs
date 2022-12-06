@@ -1,7 +1,6 @@
 module Day01 where
 
 import Control.Arrow ((>>>))
-import qualified Control.Newtype as Newtype
 import Data.Function ((&))
 import Data.Functor ((<&>))
 import qualified Data.List as List
@@ -26,7 +25,8 @@ part2 input =
     & Text.splitOn "\n\n"
     <&> Text.lines
     <&> (map (Text.unpack >>> Read.readMaybe >>> Maybe.fromMaybe 0) >>> sum)
-    & Newtype.underF Down (List.sort >>> take 3)
+    & List.sortOn Down
+    & take 3
     & sum
 
 run :: IO ()

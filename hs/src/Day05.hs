@@ -1,32 +1,24 @@
 module Day05 where
 
 import Control.Applicative ((<|>))
-import Control.Arrow ((>>>))
 import Control.Lens ((^..))
 import Control.Lens.Combinators
 import qualified Control.Monad.State as State
-import qualified Control.Newtype as Newtype
-import qualified Data.Either as Either
 import qualified Data.Foldable as Foldable
 import Data.Function ((&))
-import Data.Functor (($>), (<&>))
+import Data.Functor ((<&>))
 import qualified Data.List as List
 import Data.Map (Map)
 import qualified Data.Map as Map
 import qualified Data.Maybe as Maybe
-import Data.Ord (Down (..))
-import Data.Sequence (Seq)
-import qualified Data.Sequence as Sequence
 import Data.Text (Text)
 import qualified Data.Text as Text
 import qualified Data.Text.IO as Text
 import Data.Void (Void)
-import qualified Debug.Trace as Debug
 import Text.Megaparsec (Parsec)
 import qualified Text.Megaparsec as Megaparsec
 import qualified Text.Megaparsec.Char as Megaparsec.Char
 import qualified Text.Megaparsec.Char.Lexer as Megaparsec.Char.Lexer
-import qualified Text.Read as Read
 
 parseCrates :: Text -> Map Int [Char]
 parseCrates input =
@@ -50,7 +42,7 @@ parseCrates input =
         -- Need to reverse chars so top of stack is at front of list
         pure (Just (n, reverse chars))
         <|> do
-          Megaparsec.skipManyTill Megaparsec.anySingle Megaparsec.Char.newline
+          _ <- Megaparsec.skipManyTill Megaparsec.anySingle Megaparsec.Char.newline
           pure Nothing
 
 data Move = Move
@@ -68,11 +60,11 @@ parseMoves input =
   where
     move :: Parsec Void Text Move
     move = do
-      "move "
+      _ <- "move "
       amount <- Megaparsec.Char.Lexer.decimal
-      " from "
+      _ <- " from "
       from <- Megaparsec.Char.Lexer.decimal
-      " to "
+      _ <- " to "
       to <- Megaparsec.Char.Lexer.decimal
       Megaparsec.Char.space
       pure Move {..}
