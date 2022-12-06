@@ -84,7 +84,7 @@ fn part1(input: &str) -> String {
             .and_modify(|x| {
                 let mut n = mv.n;
                 while n > 0 {
-                    x.pop().map(|popped| to_mv.push(popped));
+                    to_mv.push(x.pop().expect("💩"));
                     n -= 1;
                 }
             })

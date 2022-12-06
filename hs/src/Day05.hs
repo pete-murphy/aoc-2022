@@ -6,10 +6,10 @@ import Control.Lens.Combinators
 import qualified Control.Monad.State as State
 import qualified Data.Foldable as Foldable
 import Data.Function ((&))
-import Data.Functor ((<&>))
+import Data.Functor (($>), (<&>))
+import Data.IntMap (IntMap, (!))
+import qualified Data.IntMap as IntMap
 import qualified Data.List as List
-import Data.Map (Map)
-import qualified Data.Map as Map
 import qualified Data.Maybe as Maybe
 import Data.Text (Text)
 import qualified Data.Text as Text
@@ -20,7 +20,7 @@ import qualified Text.Megaparsec as Megaparsec
 import qualified Text.Megaparsec.Char as Megaparsec.Char
 import qualified Text.Megaparsec.Char.Lexer as Megaparsec.Char.Lexer
 
-parseCrates :: Text -> Map Int [Char]
+parseCrates :: Text -> IntMap [Char]
 parseCrates input =
   input
     & Text.splitOn "\n"
@@ -30,7 +30,7 @@ parseCrates input =
     & unlines
     & Megaparsec.parseMaybe (Megaparsec.many crates)
     <&> Maybe.catMaybes
-    <&> Map.fromList
+    <&> IntMap.fromList
     & Maybe.fromMaybe (error "Oops")
   where
     crates :: Parsec Void String (Maybe (Int, [Char]))
@@ -41,16 +41,13 @@ parseCrates input =
         Megaparsec.Char.space1
         -- Need to reverse chars so top of stack is at front of list
         pure (Just (n, reverse chars))
-        <|> do
-          _ <- Megaparsec.skipManyTill Megaparsec.anySingle Megaparsec.Char.newline
-          pure Nothing
+        <|> Megaparsec.skipManyTill Megaparsec.anySingle Megaparsec.Char.newline $> Nothing
 
 data Move = Move
   { amount :: Int,
     from :: Int,
     to :: Int
   }
-  deriving (Show)
 
 parseMoves :: Text -> [Move]
 parseMoves input =
@@ -60,13 +57,9 @@ parseMoves input =
   where
     move :: Parsec Void Text Move
     move = do
-      _ <- "move "
-      amount <- Megaparsec.Char.Lexer.decimal
-      _ <- " from "
-      from <- Megaparsec.Char.Lexer.decimal
-      _ <- " to "
-      to <- Megaparsec.Char.Lexer.decimal
-      Megaparsec.Char.space
+      amount <- "move " *> Megaparsec.Char.Lexer.decimal
+      from <- " from " *> Megaparsec.Char.Lexer.decimal
+      to <- " to " *> Megaparsec.Char.Lexer.decimal <* Megaparsec.Char.space
       pure Move {..}
 
 part1 :: Text -> String
@@ -78,8 +71,8 @@ part1 input = do
   let finalCrates = flip State.execState crates do
         Foldable.for_ moves \Move {..} -> do
           State.modify \crates' -> do
-            let (reverse -> lose, keep) = List.splitAt amount (crates' Map.! from)
-            crates' & Map.insert from keep & Map.insertWith (<>) to lose
+            let (reverse -> lose, keep) = List.splitAt amount (crates' ! from)
+            crates' & IntMap.insert from keep & IntMap.insertWith (<>) to lose
   finalCrates ^.. folded . taking 1 folded
 
 part2 :: Text -> String
@@ -92,8 +85,8 @@ part2 input = do
         Foldable.for_ moves \Move {..} -> do
           State.modify \crates' -> do
             -- Only difference, omitting the reverse here
-            let (lose, keep) = List.splitAt amount (crates' Map.! from)
-            crates' & Map.insert from keep & Map.insertWith (<>) to lose
+            let (lose, keep) = List.splitAt amount (crates' ! from)
+            crates' & IntMap.insert from keep & IntMap.insertWith (<>) to lose
   finalCrates ^.. folded . taking 1 folded
 
 run :: IO ()
