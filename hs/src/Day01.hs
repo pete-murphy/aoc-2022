@@ -1,7 +1,6 @@
-module Day05 where
+module Day01 where
 
 import Control.Arrow ((>>>))
-import Control.Newtype (ala)
 import qualified Control.Newtype as Newtype
 import Data.Function ((&))
 import Data.Functor ((<&>))
