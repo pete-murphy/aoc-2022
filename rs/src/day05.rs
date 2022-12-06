@@ -40,11 +40,8 @@ fn parse_instr_line(input: &str) -> Move {
     mv
 }
 
-fn part1(input: &str) -> String {
-    let (&crates_lines, &instrs_lines) = match input.split("\n\n").collect::<Vec<_>>().as_slice() {
-        [crates, instrs] => (crates, instrs),
-        _ => panic!("Failed splitting into crates & instructions sections"),
-    };
+fn parse_input(input: &str) -> (BTreeMap<usize, Vec<char>>, impl Iterator<Item = Move> + '_) {
+    let (crates_lines, instrs_lines) = input.split_once("\n\n").unwrap();
 
     let parsed_crates = crates_lines
         .split("\n")
@@ -73,6 +70,12 @@ fn part1(input: &str) -> String {
         .split("\n")
         .take_while(|l| !l.is_empty())
         .map(parse_instr_line);
+
+    (m, parsed_instrs)
+}
+
+fn part1(input: &str) -> String {
+    let (mut m, parsed_instrs) = parse_input(input);
 
     // TODO: The following is a weird way to modify a map
     for mv in parsed_instrs {
@@ -101,38 +104,7 @@ fn part1(input: &str) -> String {
 }
 
 fn part2(input: &str) -> String {
-    let (&crates_lines, &instrs_lines) = match input.split("\n\n").collect::<Vec<_>>().as_slice() {
-        [crates, instrs] => (crates, instrs),
-        _ => panic!("Failed splitting into crates & instructions sections"),
-    };
-
-    let parsed_crates = crates_lines
-        .split("\n")
-        .take_while(|&x| !x.starts_with(" 1 "))
-        .map(parse_crate_line);
-
-    let parsed_crates_vec = parsed_crates.collect::<Vec<_>>();
-
-    // Using BTreeMap just so keys are sorted when we get values out
-    let mut m: BTreeMap<usize, Vec<char>> = BTreeMap::new();
-
-    for xs in parsed_crates_vec.iter().rev() {
-        for (j, x) in xs.iter().enumerate() {
-            match x {
-                &Some(c) => {
-                    m.entry(j + 1)
-                        .and_modify(|v| v.push(c))
-                        .or_insert([c].to_vec());
-                }
-                _ => (),
-            }
-        }
-    }
-
-    let parsed_instrs = instrs_lines
-        .split("\n")
-        .take_while(|l| !l.is_empty())
-        .map(parse_instr_line);
+    let (mut m, parsed_instrs) = parse_input(input);
 
     // TODO: The following is a weird way to modify a map
     for mv in parsed_instrs {
